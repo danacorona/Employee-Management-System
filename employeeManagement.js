@@ -1,6 +1,7 @@
 //Dependencies
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const cTable = require('console.table');
 
 
 const connection = mysql.createConnection ({
@@ -71,7 +72,7 @@ connection.connect((err) => {
   }
 
 
-    //Add Functions
+    //  Add Deparment
   const addDepartment = () => {
     inquirer
         .prompt ([
@@ -86,7 +87,16 @@ connection.connect((err) => {
         })
     }
 
+
+    // Add Role
   const addRole = () => {
+    const departments = [];
+    connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err;
+        for (var i = 0; i <res.length; i++) {
+            departments.push(res[i].depName);
+        }
+    });
       inquirer
         .prompt([
             {
@@ -96,15 +106,34 @@ connection.connect((err) => {
             {
                 name: "salary",
                 message: "What is the salary for this role?"
+            },
+            {
+                name: "department",
+                message: "Which department does this role belong to?",
+                type: 'list',
+                choices: departments,
             }
-        ]).then ((res) => {
-            connection.query(`INSERT INTO role (title, salary) VALUES ("${res.title}", ${res.salary})`)
-            console.log(`Added a role of ${res.title} and a salary of ${res.salary}!`);
+        ])
+        .then ((res) => {
+            connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${res.title}", ${res.salary})`)
+            connection.query('SELECT role.department_id, department.depName, department.id FROM role INNER JOIN department on (department.id = role.department_id')
+            if (res.departments === depName) {
+                connection.query(`INSERT INTO role (department_id) VALUES ("${res.department}")`)
+            }
+            console.log(`Added a role of ${res.title} and a salary of ${res.salary} to the ${res.department} Department!`);
             runProgram();
         })
   }
 
+    // Add Employee
   const addEmployee = () => {
+    const roles = [];
+    connection.query('SELECT * FROM roles', (err, res) => {
+        if (err) throw err;
+        for (var i = 0; i <res.length; i++) {
+            roles.push(res[i].title);
+        }
+    });
       inquirer
         .prompt([
             {
@@ -114,7 +143,13 @@ connection.connect((err) => {
             {
                 name: "lastname",
                 message: "What is the Employee's Last Name?"
-            }
+            },
+            {
+                name: "role",
+                message: "What is the role of this employee?",
+                type: 'list',
+                choices: roles
+            },
         ]).then ((res) => {
             connection.query(`INSERT INTO employee (first_name, last_name) VALUES ("${res.firstname}", "${res.lastname}")`)
             console.log(`Added ${res.firstname} ${res.lastname}!`)
@@ -126,17 +161,35 @@ connection.connect((err) => {
 
 
 
-  // View Functions (all) -- Bonus (Managers & combined salary)
+    // View Department
   const viewDepartment = () => {
+      connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        runProgram();
+      });
       
   }
 
+    //   View Roles
 
-  // Update Functions (roles) -- Bonus (Managers)
+  const viewRoles = () => {
+      connection.query('SELECT * FROM role', (err, res) => {
+          if (err) throw err;
+          console.table(res);
+          runProgram();
+          
+      })
+  }
 
+    // View Employees   
 
-  //Bonus Delete Functions
+  const viewEmployees = () => {
+      connection.query('SELECT * FROM employee', (err, res) => {
+          if (err) throw err;
+          console.table(res);
+          runProgram();
+      })
+  }
 
-
-  //End Connection
 
