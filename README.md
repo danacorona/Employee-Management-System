@@ -37,6 +37,10 @@ None
 
 
 ***
+##Walkthrough Video
+![Walkthrough Video](./Walkthrough.gif)
+
+***
 ## Questions
 For questions about this project please reach out to me!
 
