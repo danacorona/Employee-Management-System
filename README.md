@@ -37,7 +37,7 @@ None
 
 
 ***
-##Walkthrough Video
+## Walkthrough Video
 ![Walkthrough Video](./Walkthrough.gif)
 
 ***
